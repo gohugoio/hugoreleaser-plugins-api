@@ -3,4 +3,4 @@
 [![GoDoc](https://godoc.org/github.com/gohugoio/hugoreleaser-plugins-api?status.svg)](https://godoc.org/github.com/gohugoio/hugoreleaser-plugins-api)
 
 
-Plugins API for https://github.com/gohugoio/hugoreleaser-plugins-api
+Plugins API for https://github.com/gohugoio/hugoreleaser
