@@ -16,6 +16,7 @@ package archiveplugin
 
 import (
 	"fmt"
+	"io/fs"
 
 	"github.com/gohugoio/hugoreleaser-plugins-api/model"
 )
@@ -107,6 +108,9 @@ type ArchiveFile struct {
 
 	// Relative target path, including the name of the file.
 	TargetPath string `toml:"target_path"`
+
+	// Mode represents a file's mode and permission bits.
+	Mode fs.FileMode `toml:"mode"`
 }
 
 func (a *ArchiveFile) Init() error {
