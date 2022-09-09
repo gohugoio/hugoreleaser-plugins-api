@@ -8,10 +8,22 @@ import (
 
 // FromNMap converts m to T.
 // See https://pkg.go.dev/github.com/mitchellh/mapstructure#section-readme
-func FromMap[T any](m map[string]any) (T, error) {
+func FromMap[S, T any](m map[string]S) (T, error) {
 	var t T
-	err := mapstructure.WeakDecode(m, &t)
-	return t, err
+
+	config := &mapstructure.DecoderConfig{
+		Metadata:         nil,
+		Result:           &t,
+		WeaklyTypedInput: true,
+		Squash:           true,
+	}
+
+	decoder, err := mapstructure.NewDecoder(config)
+	if err != nil {
+		return t, err
+	}
+
+	return t, decoder.Decode(m)
 }
 
 // Error is an error that can be returned from a plugin,
