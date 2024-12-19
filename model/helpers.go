@@ -35,10 +35,10 @@ func NewError(what string, err error) *Error {
 
 // Error holds an error message.
 type Error struct {
-	Msg string `toml:"msg"`
+	Msg string `json:"msg"`
 }
 
-func (r Error) Error() string {
+func (r *Error) Error() string {
 	return r.Msg
 }
 

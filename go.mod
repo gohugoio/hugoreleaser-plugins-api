@@ -5,7 +5,7 @@ go 1.21.0
 toolchain go1.22.0
 
 require (
-	github.com/bep/execrpc v0.9.0
+	github.com/bep/execrpc v0.10.0
 	github.com/mitchellh/mapstructure v1.5.0
 )
 
