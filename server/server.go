@@ -14,4 +14,39 @@
 
 package server
 
-// TODO1 remove me.
+import (
+	"fmt"
+
+	"github.com/bep/execrpc"
+)
+
+// protocolVersion is the major version of the protocol.
+const protocolVersion = 2
+
+// Options is a sub set of execrpc.ServerOptions.
+type Options[C, Q, M, R any] struct {
+	// Init is the function that will be called when the server is started.
+	Init func(C, execrpc.ProtocolInfo) error
+
+	// Handle is the function that will be called when a request is received.
+	Handle func(*execrpc.Call[Q, M, R])
+}
+
+// New is just a wrapper around execrpc.New with some additional and common checks.
+func New[C, Q, M, R any](opts Options[C, Q, M, R]) (*execrpc.Server[C, Q, M, R], error) {
+	return execrpc.NewServer(
+		execrpc.ServerOptions[C, Q, M, R]{
+			GetHasher:     nil,
+			DelayDelivery: false,
+			Init: func(v C, protocol execrpc.ProtocolInfo) error {
+				if protocol.Version != protocolVersion {
+					return fmt.Errorf("unsupported protocol version %d, expected %d", protocol.Version, protocolVersion)
+				}
+				return opts.Init(v, protocol)
+			},
+			Handle: func(call *execrpc.Call[Q, M, R]) {
+				opts.Handle(call)
+			},
+		},
+	)
+}

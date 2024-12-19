@@ -37,16 +37,16 @@ var (
 
 // Request is what is sent to an external archive tool.
 type Request struct {
-	GoInfo model.GoInfo `toml:"go_info"`
+	GoInfo model.GoInfo `json:"go_info"`
 
 	// Settings for the archive.
 	// This is the content of archive_settings.custom_settings.
-	Settings map[string]any `toml:"settings"`
+	Settings map[string]any `json:"settings"`
 
-	Files []ArchiveFile `toml:"files"`
+	Files []ArchiveFile `json:"files"`
 
 	// Filename with extension.
-	OutFilename string `toml:"out_filename"`
+	OutFilename string `json:"out_filename"`
 }
 
 func (r *Request) Init() error {
@@ -65,13 +65,13 @@ func (r *Request) Init() error {
 
 type ArchiveFile struct {
 	// The source filename.
-	SourcePathAbs string `toml:"source_path_abs"`
+	SourcePathAbs string `json:"source_path_abs"`
 
 	// Relative target path, including the name of the file.
-	TargetPath string `toml:"target_path"`
+	TargetPath string `json:"target_path"`
 
 	// Mode represents a file's mode and permission bits.
-	Mode fs.FileMode `toml:"mode"`
+	Mode fs.FileMode `json:"mode"`
 }
 
 func (a *ArchiveFile) Init() error {

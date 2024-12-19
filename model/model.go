@@ -24,20 +24,23 @@ type Initializer interface {
 
 // GoInfo contains the Go environment information.
 type GoInfo struct {
-	Goos   string `toml:"goos"`
-	Goarch string `toml:"goarch"`
+	Goos   string `json:"goos"`
+	Goarch string `json:"goarch"`
 }
 
+// ProjectInfo contains the project and tag information.
 type ProjectInfo struct {
-	Project string `toml:"project"`
-	Tag     string `toml:"tag"`
+	Project string `json:"project"`
+	Tag     string `json:"tag"`
 }
 
 // Config configures the plugin.
 type Config struct {
-	Version     int         `toml:"version"`
-	Try         bool        `toml:"try"`
-	ProjectInfo ProjectInfo `toml:"project_info"`
+	// If set, the plugin should run in "dry-run" mode.
+	Try bool `json:"try"`
+
+	// The project build information.
+	ProjectInfo ProjectInfo `json:"project_info"`
 }
 
 // Receipt passed back to the client.

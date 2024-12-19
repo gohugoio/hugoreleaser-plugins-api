@@ -27,7 +27,7 @@ import (
 func TestStartClientInitFail(t *testing.T) {
 	c := qt.New(t)
 
-	client, err := execrpc.StartClient(
+	_, err := execrpc.StartClient(
 		execrpc.ClientOptions[model.Config, Request, any, model.Receipt]{
 			ClientRawOptions: execrpc.ClientRawOptions{
 				Version: 1,
