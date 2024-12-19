@@ -14,4 +14,8 @@
 
 package server
 
-// TODO1 remove me.
+import "testing"
+
+func TestServer(t *testing.T) {
+	// Nothing here for now.
+}
