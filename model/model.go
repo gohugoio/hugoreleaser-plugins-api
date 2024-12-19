@@ -14,19 +14,34 @@
 
 package model
 
+import "github.com/bep/execrpc"
+
 type Initializer interface {
 	// Init initializes a config struct, that could be parsing of strings into Go objects, compiling of Glob patterns etc.
 	// It returns an error if the initialization failed.
 	Init() error
 }
 
-// BuildInfo hold the core information about a build.
-// This is used both by the plugins and the built-in archive implementation
-// as the template context for the name template.
-// It's kept here in this package because it's convenient.
-type BuildInfo struct {
+// GoInfo contains the Go environment information.
+type GoInfo struct {
+	Goos   string `toml:"goos"`
+	Goarch string `toml:"goarch"`
+}
+
+type ProjectInfo struct {
 	Project string `toml:"project"`
 	Tag     string `toml:"tag"`
-	Goos    string `toml:"goos"`
-	Goarch  string `toml:"goarch"`
+}
+
+// Config configures the plugin.
+type Config struct {
+	Version     int         `toml:"version"`
+	Try         bool        `toml:"try"`
+	ProjectInfo ProjectInfo `toml:"project_info"`
+}
+
+// Receipt passed back to the client.
+type Receipt struct {
+	execrpc.Identity
+	Error *Error `json:"err"`
 }

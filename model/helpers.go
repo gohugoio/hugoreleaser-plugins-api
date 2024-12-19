@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 
+	"github.com/bep/execrpc"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -39,4 +40,31 @@ type Error struct {
 
 func (r Error) Error() string {
 	return r.Msg
+}
+
+// RawSender is used to send raw messages to the client.
+type RawSender interface {
+	SendRaw(...execrpc.Message)
+}
+
+// StatusInfoLog is used to mark a INFO log message from the server.
+const StatusInfoLog = 101
+
+// Infof logs an INFO message to the client.
+func Infof(rs RawSender, format string, args ...interface{}) {
+	rs.SendRaw(
+		execrpc.Message{
+			Header: execrpc.Header{
+				Status: StatusInfoLog,
+			},
+			Body: []byte(fmt.Sprintf(format, args...)),
+		},
+	)
+}
+
+// InfofFunc returns a function that logs an INFO message to the client.
+func InfofFunc(rs RawSender) func(format string, args ...any) {
+	return func(format string, args ...any) {
+		Infof(rs, format, args...)
+	}
 }

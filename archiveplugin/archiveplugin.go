@@ -1,4 +1,4 @@
-// Copyright 2022 The Hugoreleaser Authors
+// Copyright 2024 The Hugoreleaser Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,16 +37,7 @@ var (
 
 // Request is what is sent to an external archive tool.
 type Request struct {
-	// Version is the archive plugin version.
-	// This is just used for validation on startup.
-	Version int `toml:"version"`
-
-	// Heartbeat is a string that is echoed back to the caller,
-	// used to test that plugin servers are up and running.
-	Heartbeat string `toml:"heartbeat"`
-
-	// BuildInfo holds the basic build information about the current build.
-	BuildInfo model.BuildInfo `toml:"build_info"`
+	GoInfo model.GoInfo `toml:"go_info"`
 
 	// Settings for the archive.
 	// This is the content of archive_settings.custom_settings.
@@ -56,19 +47,6 @@ type Request struct {
 
 	// Filename with extension.
 	OutFilename string `toml:"out_filename"`
-}
-
-// HeartbeatResponse returns a Response that, if the second return value is true,
-// will be returned to the caller.
-func (r Request) HeartbeatResponse() (Response, bool) {
-	if r.Heartbeat == "" {
-		return Response{}, false
-	}
-	var err *model.Error
-	if r.Version != Version {
-		err = &model.Error{Msg: fmt.Sprintf("archive plugin version mismatch: client sent %d, server is at %d", r.Version, Version)}
-	}
-	return Response{Heartbeat: r.Heartbeat, Error: err}, true
 }
 
 func (r *Request) Init() error {
@@ -83,23 +61,6 @@ func (r *Request) Init() error {
 		}
 	}
 	return nil
-}
-
-// Response is what is sent back from an external archive tool.
-type Response struct {
-	// Heartbeat is a string that is echoed back to the caller,
-	// used to test that plugin servers are up and running.
-	Heartbeat string `toml:"heartbeat"`
-
-	Error *model.Error `toml:"err"`
-}
-
-func (r Response) Err() error {
-	if r.Error == nil {
-		// Make sure that resp.Err() == nil.
-		return nil
-	}
-	return r.Error
 }
 
 type ArchiveFile struct {
