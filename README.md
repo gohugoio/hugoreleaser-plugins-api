@@ -9,19 +9,24 @@ A plugin is a [Go Module](https://go.dev/blog/using-go-modules) with a main func
 
 ```go
 func main() {
+	var archiveClient archiveClient
 	server, err := server.New(
-		func(d server.Dispatcher, req archiveplugin.Request) archiveplugin.Response {
-			d.Infof("Creating archive %s", req.OutFilename)
-
-			if err := req.Init(); err != nil {
-				// ... handle error.
-			}
-
-			if err := createArchive(req); err != nil {
-				// ... handle error.
-			}
-			// Empty response is a success.
-			return archiveplugin.Response{}
+		server.Options[model.Config, archiveplugin.Request, any, model.Receipt]{
+			Init: func(c model.Config, prococol execrpc.ProtocolInfo) error {
+				archiveClient.cfg = c
+				return nil
+			},
+			Handle: func(call *execrpc.Call[archiveplugin.Request, any, model.Receipt]) {
+				model.Infof(call, "Creating archive %s", call.Request.OutFilename)
+				var receipt model.Receipt
+				if !archiveClient.cfg.Try {
+					if err := archiveClient.createArchive(call.Request); err != nil {
+						receipt.Error = model.NewError(name, err)
+					}
+				}
+				receipt = <-call.Receipt()
+				call.Close(false, receipt)
+			},
 		},
 	)
 	if err != nil {
@@ -31,9 +36,8 @@ func main() {
 	if err := server.Start(); err != nil {
 		log.Fatalf("Failed to start server: %s", err)
 	}
-
-	_ = server.Wait()
 }
+
 ```
 
 See the [Deb Plugin](https://github.com/gohugoio/hugoreleaser-archive-plugins/tree/main/deb) for a more complete example.
